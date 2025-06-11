@@ -1,0 +1,27 @@
+# 1. Editor / OS
+*.DS_Store
+.vscode/
+.idea/
+
+# 2. Ambiente Python do backend
+/backend/.venv/
+/backend/env/
+/backend/*.env
+
+# 3. Cache Python
+**/__pycache__/
+**/*.py[cod]
+
+# 4. Uploads e estáticos do backend
+/backend/media/
+/backend/staticfiles/
+
+# 5. Dependências do frontend
+/frontend/node_modules/
+
+# 6. Logs
+*.log
+
+# 7. Build e cobertura
+.coverage
+htmlcov/
