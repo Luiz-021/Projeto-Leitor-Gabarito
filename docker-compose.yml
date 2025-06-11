@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: oci_db
+      POSTGRES_USER: oci_user
+      POSTGRES_PASSWORD: oci_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: 'True'
+      POSTGRES_DB: oci_db
+      POSTGRES_USER: oci_user
+      POSTGRES_PASSWORD: oci_pass
+      POSTGRES_HOST: db
+      POSTGRES_PORT: '5432'
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
