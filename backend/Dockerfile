@@ -16,7 +16,7 @@ RUN pip install --upgrade pip \
 
 COPY . /app/
 
-COPY libs/ /app/libs/
+#COPY libs/ /app/libs/
 
 EXPOSE 8000
 
