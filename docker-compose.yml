@@ -15,6 +15,7 @@ services:
   backend:
     build:
       context: ./backend
+    restart: always 
     volumes:
       - ./backend:/app
     ports:
@@ -26,7 +27,7 @@ services:
       POSTGRES_PASSWORD: oci_pass
       POSTGRES_HOST: db
       POSTGRES_PORT: '5432'
-      #LIBLEITOR_PATH: "/app/libs/libleitor.so"
+      LIBLEITOR_PATH: "/app/libs/libleitor.so"
     depends_on:
       - db
 
