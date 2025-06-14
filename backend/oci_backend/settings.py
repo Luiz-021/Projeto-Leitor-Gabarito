@@ -65,12 +65,8 @@ WSGI_APPLICATION = 'oci_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB','oci_db'),
-        'USER': os.getenv('POSTGRES_USER','oci_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD','oci_pass'),
-        'HOST': os.getenv('POSTGRES_HOST','db'),
-        'PORT': os.getenv('POSTGRES_PORT','5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
