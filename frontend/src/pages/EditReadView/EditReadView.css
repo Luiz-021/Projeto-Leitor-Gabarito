@@ -1,0 +1,105 @@
+body {
+    margin: 0;
+}
+
+.read-container {
+    background: #0CC0DF;
+    background: linear-gradient(90deg,rgba(12, 192, 223, 1) 0%, rgba(255, 222, 89, 1) 100%);
+    height: 110vh;
+}
+
+.read-header {
+    background-color: #48908e;
+    padding: 10px 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    justify-content: space-between;
+    display: flex;
+}
+.edita-button{
+    position:absolute;
+    bottom: 140px;
+    right: 870px;
+    padding: 10px 20px;
+    background-color: #fbbc4b;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    text-decoration: underline;
+}
+.header-title {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-right: 125px;
+    margin-top: 15px;
+    margin-bottom: 0%;
+}
+
+.logo-goreader,
+.logo-oci {
+    width: auto;
+    height: 50px;
+    max-height: 80%;
+    object-fit: contain;
+}
+.main-content {
+    max-width: 850px;
+    max-height: 600px;
+    margin: 40px auto;
+    background-color:white;
+    border-radius: 15px;
+    padding: 30px;
+    gap: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.form-section {
+    flex: 1;
+    margin-right: 20px;
+}
+.gabarito-section {
+    max-width: 250px;
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    border: #000000;
+    border-radius: 90px;
+}
+label {
+    margin-bottom: 10px;
+    font: quicksand;
+    font-size: large;
+    text-align: right;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+table, th, td {
+    border: 1px solid #000000;
+}
+td {
+    padding: 8px;
+    text-align: center;
+}
+.legenda {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #666
+}
