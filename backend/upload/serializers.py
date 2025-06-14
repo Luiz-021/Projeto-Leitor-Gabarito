@@ -1,18 +1,20 @@
 from rest_framework import serializers
-from .models import GabaritoUpload
-from registro.serializers import ParticipanteSerializer, ProvaSerializer
+from .models import LeituraGabarito
 
-class GabaritoUploadSerializer(serializers.ModelSerializer):
+class UploadLeituraSerializer(serializers.Serializer):
+    arquivo = serializers.ImageField()
 
+class ConfirmarLeituraSerializer(serializers.Serializer):
+    prova_id        = serializers.IntegerField()
+    participante_id = serializers.IntegerField()
+    leitura_respostas   = serializers.CharField()
+    temp_path       = serializers.CharField(required=False)
+
+class LeituraGabaritoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GabaritoUpload
-        fields = [
-            'id',
-            'participante',
-            'prova',
-            'arquivo_gabarito',
-            'respostas_lidas',
-            'data_upload',
-            'processado'
-        ]
-        read_only_fields = ['data_upload', 'respostas_lidas', 'processado']
+        model = LeituraGabarito
+        fields = '__all__'
+        read_only_fields = (
+            'id','data_hora','erro','nota','acertos','status',
+            'leitura_respostas','caminho_imagem'
+        )

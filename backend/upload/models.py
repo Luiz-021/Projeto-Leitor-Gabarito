@@ -1,41 +1,23 @@
 from django.db import models
-from registro.models import Participante, Prova
+from registro.models import Prova, Participante
 
-class GabaritoUpload(models.Model):
-    participante = models.ForeignKey(
-        Participante,
-        on_delete=models.CASCADE,
-        related_name='gabaritos_enviados',
-        help_text="Participante associado a este gabarito enviado."
-    )
-    prova = models.ForeignKey(
-        Prova,
-        on_delete=models.CASCADE,
-        related_name='gabaritos_recebidos',
-        help_text="Prova a que este gabarito se refere."
-    )
-    arquivo_gabarito = models.FileField(
-        upload_to='gabaritos/',
-        help_text="Arquivo do gabarito enviado (ex: imagem escaneada)."
-    )
-    respostas_lidas = models.TextField(
-        blank=True,
-        default='',
-        help_text="String das respostas lidas do gabarito (ex: 'ABCDE...')"
-    )
-    data_upload = models.DateTimeField(
-        auto_now_add=True,
-        help_text="Data e hora do upload do gabarito."
-    )
-    processado = models.BooleanField(
-        default=False,
-        help_text="Indica se o gabarito já foi processado (respostas extraídas, etc.)."
-    )
+class LeituraGabarito(models.Model):
+    ERRO_CHOICES = [
+        (0, "Nenhum"),
+        (1, "Erro Aztec"),
+        (2, "Imprecisão"),
+        (3, "Erro fatal"),
+    ]
+
+    prova          = models.ForeignKey(Prova, on_delete=models.PROTECT)
+    participante   = models.ForeignKey(Participante, on_delete=models.PROTECT)
+    data_hora      = models.DateTimeField(auto_now_add=True)
+    leitura_respostas  = models.TextField(help_text="String retornada pela leitura automática")
+    erro           = models.IntegerField(choices=ERRO_CHOICES)
+    nota           = models.FloatField(blank=True, null=True)
+    acertos        = models.CharField(max_length=20, blank=True)
+    status         = models.CharField(max_length=20, default="pendente")
+    caminho_imagem = models.CharField(max_length=500)
 
     def __str__(self):
-        return f"Gabarito de {self.participante.nome} para {self.prova}"
-
-    class Meta:
-        verbose_name = "Gabarito Enviado"
-        verbose_name_plural = "Gabaritos Enviados"
-        unique_together = ('participante', 'prova')
+        return f"Leitura(id={self.id}, prova={self.prova.id}, part={self.participante.id})"
