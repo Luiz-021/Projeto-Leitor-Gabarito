@@ -87,12 +87,17 @@ class ConfirmarLeituraAPIView(APIView):
             externo_prova_id=d['prova_id'],
             externo_participante_id=d['participante_id'],
             leitura_respostas=d['leitura_respostas'],
-            erro=0,
+            erro=d.get('erro', 0),
             nota=nota,
             acertos=acertos,
             status='confirmado',
             caminho_imagem=d.get('temp_path',''),
-            numero_inscricao=d['participante_id']
+            numero_inscricao=   d['participante_id'],
+            nome_aluno=         d.get('nome_aluno',''),
+            escola_aluno=       d.get('escola_aluno',''),
+            modalidade=         d.get('modalidade',''),
+            fase=               d.get('fase',''),
+            data=               d.get('data',   None),
         )
         return Response({
             'id': lg.id,

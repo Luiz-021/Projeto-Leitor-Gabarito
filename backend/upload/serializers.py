@@ -8,7 +8,13 @@ class ConfirmarLeituraSerializer(serializers.Serializer):
     prova_id          = serializers.IntegerField()
     participante_id   = serializers.IntegerField()
     leitura_respostas = serializers.CharField()
+    erro              = serializers.IntegerField(required=True)
     temp_path         = serializers.CharField(required=False)
+    nome_aluno        = serializers.CharField(required=False, allow_blank=True)
+    escola_aluno      = serializers.CharField(required=False, allow_blank=True)
+    modalidade        = serializers.CharField(required=False, allow_blank=True)
+    fase              = serializers.CharField(required=False, allow_blank=True)
+    data              = serializers.DateField(required=False, input_formats=['%Y-%m-%d','%d-%m-%Y'])
 
 class LeituraGabaritoSerializer(serializers.ModelSerializer):
     class Meta:
