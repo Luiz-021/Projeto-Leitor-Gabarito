@@ -16,8 +16,8 @@ body {
 }
 .edite-button{
     position:absolute;
-    bottom: 170px;
-    right: 970px;
+    bottom: 110px;
+    right: 1040px;
     padding: 10px 20px;
     background-color: #fbbc4b;
     color: white;
@@ -29,21 +29,8 @@ body {
 }
 .confirm-button{
     position:absolute;
-    bottom: 170px;
-    right: 750px;
-    padding: 10px 20px;
-    background-color: #fbbc4b;
-    color: white;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 20px;
-    text-decoration: underline;
-}
-.delete-button{
-    position:absolute;
     bottom: 110px;
-    right: 965px;
+    right: 820px;
     padding: 10px 20px;
     background-color: #fbbc4b;
     color: white;
