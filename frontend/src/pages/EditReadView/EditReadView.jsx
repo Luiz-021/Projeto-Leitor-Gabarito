@@ -65,6 +65,9 @@ export default function EditReadView() {
                         <label>Data: <input name="data" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.data} onChange={handleChange}/></label>
                         <label>Inscrição: <input name="inscricao" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.inscricao} onChange={handleChange}/></label>
                     </form>
+                    <div>
+                        <button className="edita-button" type="submit" form="editForm" onClick={handleSubmit}>Confirmar edição</button>
+                    </div>
                 </div>
                 <div style={{ width: "2px", background: "black" }} />
                 <div className="gabarito-section" style={{width:'250px'}}>
@@ -87,9 +90,6 @@ export default function EditReadView() {
                     <p>X: questão com mais de uma opção marcada</p>
                 </div>
             </main>
-            <div>
-                <button className="edita-button" type="submit" form="editForm" onClick={handleSubmit}>Confirmar edição</button>
-            </div>
         </div>
     );
 }
