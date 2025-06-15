@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./EditReadView.css";
+import "./ReadView.css";
 
-export default function EditReadView() {
+export default function ReadView() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         aluno: 'nome aluno',
@@ -11,40 +11,17 @@ export default function EditReadView() {
         fase: 'fase',
         data: 'data',
         inscricao: 'inscricao',
+        erro: 'erro',
         gabarito: ['R 1','R 2','R 3','R 4','R 5','R 6','R 7','R 8','R 9','R 10','R 11','R 12','R 13','R 14','R 15','R 16','R 17','R 18','R 19','R 20']
     });
 
-    const handleChange = (e) => {
-        const campo = e.target.name;
-        const novoValor = e.target.value;
-        setFormData((estadoAnterior) => ({
-            ...estadoAnterior,
-            [campo]: novoValor
-        }));
+    const handleEdit = () => {
+        navigate('/');
     };
 
-    const handleGabaritoChange = (e, index) => {
-        const novoValor = e.target.value;
-        setFormData((estadoAnterior) => {
-            const novoGabarito = [...estadoAnterior.gabarito];
-            novoGabarito[index] = novoValor;
-            return {
-                ...estadoAnterior,
-                gabarito: novoGabarito,
-            };
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Dados enviados:");
-        console.log("Nome do aluno:", formData.aluno);
-        console.log("Nome da escola:", formData.escola);
-        console.log("Modalidade:", formData.modalidade);
-        console.log("Fase:", formData.fase);
-        console.log("Data:", formData.data);
-        console.log("Inscrição:", formData.inscricao);
-        console.log("Gabarito:", formData.gabarito);
+    const handleConfirm = () => {
+        console.log("Leitura confirmada:", formData);
+        alert("Leitura confirmada com sucesso!");
     };
 
     return (
@@ -55,28 +32,34 @@ export default function EditReadView() {
                 <img src="/oci.png" alt="Logo da OCI" className="logo-oci"></img>
             </header>
             <main className="main-content">
-                <div className="form-section">
-                    <h1 style={{textAlign:'left'}}>Edição da leitura ✍️</h1>
-                    <form onSubmit={handleSubmit}>
-                        <label>Nome do aluno: <input name="aluno" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.aluno} onChange={handleChange}/></label>
-                        <label>Nome da escola: <input name="escola" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.escola} onChange={handleChange}/></label>
-                        <label>Modalidade: <input name="modalidade" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.modalidade} onChange={handleChange}/></label>
-                        <label>Fase: <input name="fase" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.fase} onChange={handleChange}/></label>
-                        <label>Data: <input name="data" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.data} onChange={handleChange}/></label>
-                        <label>Inscrição: <input name="inscricao" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.inscricao} onChange={handleChange}/></label>
+                <div className="form-section" style={{width:'400px'}}>
+                    <h1 style={{textAlign:'left'}}>Resultado da leitura 👓</h1>
+                    <form>
+                        <label>Nome do aluno: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.aluno} readOnly/></label>
+                        <label>Nome da escola: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.escola} readOnly/></label>
+                        <label>Modalidade: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.modalidade} readOnly/></label>
+                        <label>Fase: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.fase} readOnly/></label>
+                        <label>Data: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.data} readOnly/></label>
+                        <label>Inscrição: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.inscricao} readOnly/></label>
+                        <label>Erro: <input type="text" style={{width:'35px',marginRight:'215px', background: "transparent"}} value={formData.erro} readOnly/></label>
                     </form>
+                
+                    <div className="buttons">
+                        <button className="edite-button" onClick={handleEdit}>Editar leitura</button>
+                        <button className="confirm-button" onClick={handleConfirm}>Confirmar leitura</button>
+                    </div>
                 </div>
                 <div style={{ width: "2px", background: "black" }} />
-                <div className="gabarito-section" style={{width:'250px'}}>
+                <div className="gabarito-section" style={{width:'100px'}}>
                     <h3 style={{textAlign: "left"}}>Gabarito:</h3>
                     <table style={{width:'250px'}}>
                         <tbody>
                             {Array.from({ length: 10 }, (_, i) => (
                                 <tr key={i}>
                                     <td style={{width: '25%'}}>{String(i + 1).padStart(2, '0')}</td>
-                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i]} onChange={(e)=>handleGabaritoChange(e,i)}/></td>
+                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i]} readOnly/></td>
                                     <td style={{width: '25%'}}>{String(i + 11).padStart(2, '0')}</td>
-                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i+10]} onChange={(e)=>handleGabaritoChange(e,i+10)}/></td>
+                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i+10]} readOnly/></td>
                                 </tr>
                             ))}
                         </tbody>
@@ -87,9 +70,6 @@ export default function EditReadView() {
                     <p>X: questão com mais de uma opção marcada</p>
                 </div>
             </main>
-            <div>
-                <button className="edita-button" type="submit" form="editForm" onClick={handleSubmit}>Confirmar edição</button>
-            </div>
         </div>
     );
 }
