@@ -15,7 +15,6 @@ class Command(BaseCommand):
         p_csv = opts['provas']
         pa_csv = opts['participantes']
 
-        # Importa Provas
         with open(p_csv, newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             objs = []
@@ -27,7 +26,6 @@ class Command(BaseCommand):
             Prova.objects.bulk_create(objs, ignore_conflicts=True)
         self.stdout.write(self.style.SUCCESS(f'Importadas {len(objs)} provas.'))
 
-        # Importa Participantes
         with open(pa_csv, newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             objs = []

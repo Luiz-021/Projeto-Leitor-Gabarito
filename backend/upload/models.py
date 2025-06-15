@@ -12,11 +12,9 @@ class LeituraGabarito(models.Model):
     prova          = models.ForeignKey(Prova, on_delete=models.PROTECT)
     participante   = models.ForeignKey(Participante, on_delete=models.PROTECT)
 
-    # IDs externos
     externo_prova_id        = models.BigIntegerField(null=True, blank=True)
     externo_participante_id = models.BigIntegerField(null=True, blank=True)
 
-    # dados de leitura
     leitura_respostas  = models.TextField()
     erro               = models.IntegerField(choices=ERRO_CHOICES)
     nota               = models.FloatField(blank=True, null=True)
@@ -24,7 +22,6 @@ class LeituraGabarito(models.Model):
     status             = models.CharField(max_length=20, default="pendente")
     caminho_imagem     = models.CharField(max_length=500)
 
-    # campos para edição manual
     numero_inscricao   = models.BigIntegerField(null=True, blank=True)
     nome_aluno         = models.CharField(max_length=200, blank=True)
     escola_aluno       = models.CharField(max_length=200, blank=True)

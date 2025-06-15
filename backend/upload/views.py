@@ -137,7 +137,7 @@ class EditLeituraAPIView(APIView):
         ser.is_valid(raise_exception=True)
         ser.save()
 
-        # também atualiza participante com nome/escola se presente
+        
         nome = ser.validated_data.get('nome_aluno')
         esc  = ser.validated_data.get('escola_aluno')
         if nome or esc:
