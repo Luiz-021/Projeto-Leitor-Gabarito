@@ -18,14 +18,14 @@ async function handleResponse(response) {
 }
 
 export const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append('arquivo', file); 
+  const formData = new FormData();
+  formData.append('arquivo', file);
 
-    const response = await fetch(`${API_BASE_URL}/upload/leitura/`, {
-        method: 'POST',
-        body: formData,
-    });
-    return handleResponse(response);
+  const response = await fetch(`${API_BASE_URL}/upload/leitura/upload/`, {
+    method: 'POST',
+    body: formData,
+  });
+  return handleResponse(response);
 };
 
 export const confirmReading = async (data) => {
@@ -40,21 +40,21 @@ export const confirmReading = async (data) => {
 };
 
 export const getSavedReadings = async () => {
-    const response = await fetch(`${API_BASE_URL}/leituras_gabarito/`, {
+    const response = await fetch(`${API_BASE_URL}/upload/leituras/`, {
         method: 'GET',
     });
     return handleResponse(response);
 };
 
 export const getReadingById = async (id) => {
-    const response = await fetch(`${API_BASE_URL}/leituras_gabarito/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/upload/leituras/${id}/`, {
         method: 'GET',
     });
     return handleResponse(response);
 };
 
 export const updateReading = async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/leituras_gabarito/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/upload/leituras/${id}/`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export const updateReading = async (id, data) => {
 };
 
 export const deleteReading = async (id) => {
-    const response = await fetch(`${API_BASE_URL}/leituras_gabarito/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/upload/leituras/${id}/`, {
         method: 'DELETE',
     });
 
@@ -88,7 +88,9 @@ export const getParticipanteById = async (id) => {
 };
 
 export const getReadingsByParticipantId = async (participanteId) => {
-   
-    const response = await fetch(`${API_BASE_URL}/leituras_gabarito/?participante=${participanteId}`, { method: 'GET' });
-    return handleResponse(response);
+  const response = await fetch(
+    `${API_BASE_URL}/upload/leituras/report/?externo_participante_id=${participanteId}`,
+    { method: 'GET' }
+  );
+  return handleResponse(response);
 };

@@ -27,13 +27,11 @@ from upload.views import LeituraGabaritoViewSet, UploadLeituraAPIView, Confirmar
 router = DefaultRouter()
 router.register(r'provas', ProvaViewSet)
 router.register(r'participantes', ParticipanteViewSet)
-router.register(r'leituras_gabarito', LeituraGabaritoViewSet, basename='leitura_gabarito')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/upload/leitura/', UploadLeituraAPIView.as_view(), name='upload-leitura'),
-    path('api/upload/leitura/confirmar/', ConfirmarLeituraAPIView.as_view(), name='confirmar-leitura'),
+    path('api/upload/', include('upload.urls')),
 ]
 
 if settings.DEBUG:

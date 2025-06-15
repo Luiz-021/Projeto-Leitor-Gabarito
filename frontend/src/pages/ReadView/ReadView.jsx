@@ -30,7 +30,7 @@ export default function ReadView() {
             }
         };
         fetchLeitura();
-    }, [id]); r
+    }, [id]);
 
     const handleEdit = () => {
         navigate(`/leitura/${id}/editar`);

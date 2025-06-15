@@ -14,7 +14,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<InputView />} />
-        <Route path="/revisar-gabarito" element={<ReadView />} />
+        <Route path="/revisar-gabarito" element={<InputView />} />
         <Route path="/leitura/:id" element={<ReadView />} />
         <Route path="/estudantes" element={<StudentsView />} />
         <Route path="/estudante/:id" element={<StudentDetailView />} />
