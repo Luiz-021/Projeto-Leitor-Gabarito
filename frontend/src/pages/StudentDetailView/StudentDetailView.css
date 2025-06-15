@@ -18,9 +18,7 @@ body {
     display: flex;
 }
 .back-button{
-    position:absolute;
-    bottom: 80px;
-    right: 320px;
+    margin-left: 20px;
     padding: 10px 20px;
     background-color: #fbbc4b;
     color: white;
@@ -46,7 +44,7 @@ body {
     max-height: 80%;
     object-fit: contain;
 }
-.main-content {
+.SDmain-content {
     margin: 40px auto;
     background-color:white;
     border-radius: 15px;
@@ -61,8 +59,9 @@ body {
     display: none;
 }
 
-.form-section {
+.SDform-section {
     margin-right: 20px;
+    max-width: 430px;
 }
 .gabarito-section {
     max-width: 250px;
