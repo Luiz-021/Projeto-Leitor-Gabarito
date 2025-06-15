@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import status, mixins, viewsets
 from django.core.files.storage import default_storage
 
@@ -17,19 +18,48 @@ from .models import LeituraGabarito
 from registro.models import Prova, Participante
 
 class UploadLeituraAPIView(APIView):
+    """
+    Recebe imagem, salva temp, faz leitura pela lib em C
+    e cruza com o DB para retornar nome/escola imediatamente.
+    """
     def post(self, request):
         ser = UploadLeituraSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
-        img  = ser.validated_data['arquivo']
-        path = default_storage.save(f"temp/{img.name}", img)
-        abs_path = default_storage.path(path)
-        r = ler_por_caminho(abs_path)
+
+        
+        img   = ser.validated_data['arquivo']
+        path  = default_storage.save(f"temp/{img.name}", img)
+        abs_p = default_storage.path(path)
+        r     = ler_por_caminho(abs_p)  # retorna dict com id_prova, id_participante, leitura, erro
+
+        
+        externo_prova_id = r["id_prova"]
+        try:
+            prova = Prova.objects.get(externo_id=externo_prova_id)
+        except Prova.DoesNotExist:
+            raise ValidationError({
+                "prova_id": f"Prova externa {externo_prova_id} não cadastrada."
+            })
+
+        
+        externo_part_id = r["id_participante"]
+        participante = Participante.objects.filter(externo_id=externo_part_id).first()
+        nome_aluno = participante.nome  if participante else ""
+        escola_aluno = participante.escola if participante else ""
+
+       
         return Response({
-            "prova_id":          r["id_prova"],
-            "participante_id":   r["id_participante"],
+            "prova_id":          externo_prova_id,
+            "participante_id":   externo_part_id,
+            "nome_aluno":        nome_aluno,
+            "escola_aluno":      escola_aluno,
             "leitura_respostas": r["leitura"],
-            "temp_path":         path,
             "erro":              r["erro"],
+            "temp_path":         path,
+            # campos que o usuário vai preencher na UI:
+            "modalidade":        "",
+            "fase":              "",
+            "data":              None,
         })
 
 class ConfirmarLeituraAPIView(APIView):
@@ -38,8 +68,12 @@ class ConfirmarLeituraAPIView(APIView):
         ser.is_valid(raise_exception=True)
         d = ser.validated_data
 
-        # prova deve existir
-        prova = Prova.objects.get(externo_id=d['prova_id'])
+        # Validação para prova deve existir
+        try:
+            prova = Prova.objects.get(externo_id=d['prova_id'])
+        except Prova.DoesNotExist:
+            raise ValidationError({
+                "prova_id": f"Prova externa {d['prova_id']} não cadastrada."})
         # participante on the fly
         part, _ = Participante.objects.get_or_create(
             externo_id=d['participante_id'],
