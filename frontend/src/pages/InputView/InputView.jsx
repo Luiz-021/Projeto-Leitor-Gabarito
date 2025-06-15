@@ -15,14 +15,17 @@ export default function InputView() {
             }
         };
 
+        const navigate = useNavigate();
+
         const handleSubmit = () => {
             if (!file) {
                 alert("Por favor, selecione um arquivo primeiro.");
             return;
         }
 
-        alert(`Arquivo "${file.name}" enviado com sucesso;`);
-        
+        navigate("/leitura", {
+                state: { file },
+            });
         };
 
     return (

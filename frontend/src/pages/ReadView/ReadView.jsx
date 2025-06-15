@@ -16,7 +16,7 @@ export default function ReadView() {
     });
 
     const handleEdit = () => {
-        navigate('/');
+        navigate('/leitura/editar');
     };
 
     const handleConfirm = () => {
