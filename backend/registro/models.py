@@ -11,6 +11,7 @@ class Participante(models.Model):
     escola = models.CharField(
        max_length=200,
        blank=True,
+       null=True,
        default='', 
    )
 
