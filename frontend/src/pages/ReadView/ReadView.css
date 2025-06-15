@@ -15,9 +15,7 @@ body {
     flex-wrap: wrap;
 }
 .edite-button{
-    position:absolute;
-    bottom: 110px;
-    right: 1040px;
+    margin-top: 20px;
     padding: 10px 20px;
     background-color: #fbbc4b;
     color: white;
@@ -28,9 +26,7 @@ body {
     text-decoration: underline;
 }
 .confirm-button{
-    position:absolute;
-    bottom: 110px;
-    right: 820px;
+    margin-top: 20px;
     padding: 10px 20px;
     background-color: #fbbc4b;
     color: white;
