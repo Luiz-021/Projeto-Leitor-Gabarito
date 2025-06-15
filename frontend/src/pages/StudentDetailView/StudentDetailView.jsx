@@ -28,9 +28,9 @@ export default function StudentDetailView() {
                 <h2 className="header-title">Leitor de gabaritos da OCI</h2>
                 <img src="/oci.png" alt="Logo da OCI" class="logo-oci"></img>
             </header>
-            <main className="main-content">
-                <div className="form-section" style={{width:'500px'}}>
-                    <h1 style={{whiteSpace:'nowrap'}}>Estudante {'{'}{formData.aluno}{'}'} 🎲</h1>
+            <main className="SDmain-content">
+                <div className="SDform-section">
+                    <h1>Estudante {'{'}{formData.aluno}{'}'} 🎲</h1>
                     <form>
                         <label>Nome do aluno: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.aluno} readOnly/></label>
                         <label>Nome da escola: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.escola} readOnly/></label>
@@ -68,9 +68,9 @@ export default function StudentDetailView() {
                     <p>-1: não foi possível identificar</p>
                     <p>0: questão em branco</p>
                     <p>X: questão com mais de uma opção marcada</p>
+                    <button className="back-button" onClick={handleBack}>Voltar</button>
                 </div>
             </main>
-            <button className="back-button" onClick={handleBack}>Voltar</button>
         </div>
     );
 }
