@@ -12,12 +12,10 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<InputView />} />
-{/*                 
                 <Route path="/leitura" element={<ReadView />} />
                 <Route path="/leitura/editar" element={<EditReadView />} />
                 <Route path="/estudantes" element={<StudentsView />} />
-                <Route path="/estudantes/:id" element={<StudentDetailView />} /> */}
-                
+                <Route path="/estudantes/:id" element={<StudentDetailView />} />             
             </Routes>
         </Router>
     );

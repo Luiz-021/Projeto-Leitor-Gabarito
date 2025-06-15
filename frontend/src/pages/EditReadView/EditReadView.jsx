@@ -4,6 +4,7 @@ import "./EditReadView.css";
 
 export default function EditReadView() {
     const navigate = useNavigate();
+    
     const [formData, setFormData] = useState({
         aluno: 'nome aluno',
         escola: 'nome escola',
