@@ -56,7 +56,7 @@ export default function EditReadView() {
             </header>
             <main className="main-content">
                 <div className="form-section">
-                    <h1>Edição da leitura ✍️</h1>
+                    <h1 style={{textAlign:'left'}}>Edição da leitura ✍️</h1>
                     <form onSubmit={handleSubmit}>
                         <label>Nome do aluno: <input name="aluno" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.aluno} onChange={handleChange}/></label>
                         <label>Nome da escola: <input name="escola" type="text" style={{width:'250px',borderRadius:'10px'}} value={formData.escola} onChange={handleChange}/></label>
@@ -82,7 +82,7 @@ export default function EditReadView() {
                         </tbody>
                     </table>
                 </div>
-                <div className="legenda" style={{width:'50px'}}>
+                <div className="legenda" style={{width:'120px', textAlign:'left'}}>
                     <p>0: questão em branco</p>
                     <p>X: questão com mais de uma opção marcada</p>
                 </div>
