@@ -1,4 +1,4 @@
-def calcular_nota(leitura: str, prova) -> (float, str):
+def calcular_nota(leitura: str, prova) -> tuple[float, str]:
     """
     Compara cada caractere de `leitura` com o gabarito.
     Se diferente, conta como 0; questões não marcadas/ambíguas também.
@@ -12,6 +12,6 @@ def calcular_nota(leitura: str, prova) -> (float, str):
             break
         if resp.lower() == gabarito[i].lower():
             acertos += 1
-        # se resp diferente, pontuação 0 (sem else)
+            
     nota = acertos * peso
     return nota, f"{acertos}/{len(gabarito)}"

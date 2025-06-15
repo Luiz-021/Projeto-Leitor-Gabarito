@@ -1,65 +1,148 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getParticipanteById, getReadingsByParticipantId } from '../../api/leitorApi'; 
+import { getErrorDescription } from '../../utils/errorMap'; 
 import "./StudentDetailView.css";
 
 export default function StudentDetailView() {
+    const { id } = useParams(); 
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        aluno: 'nome aluno',
-        escola: 'nome escola',
-        modalidade: 'modalidade',
-        fase: 'fase',
-        data: 'data',
-        inscricao: 'inscricao',
-        acertos: 'acertos',
-        nota: 'nota',
-        erro: 'erro',
-        gabarito: ['R 1','R 2','R 3','R 4','R 5','R 6','R 7','R 8','R 9','R 10','R 11','R 12','R 13','R 14','R 15','R 16','R 17','R 18','R 19','R 20']
-    });
+
+    const [participante, setParticipante] = useState(null);
+    const [leiturasDoParticipante, setLeiturasDoParticipante] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [statusMessage, setStatusMessage] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            setStatusMessage('Carregando detalhes do estudante...');
+            try {
+                const participanteData = await getParticipanteById(id);
+                setParticipante(participanteData);
+
+                const leiturasData = await getReadingsByParticipantId(id);
+                setLeiturasDoParticipante(leiturasData);
+                setStatusMessage('');
+            } catch (error) {
+                console.error(`Erro ao carregar estudante ${id}:`, error);
+                setStatusMessage(`Erro: ${error.message || 'Estudante não encontrado ou falha na comunicação.'}`);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, [id]);
 
     const handleBack = () => {
-        navigate('/');
+        navigate('/estudantes'); 
     };
+
+    if (isLoading) {
+        return (
+            <div className="read-container">
+                <header className="read-header">
+                    <img src="/goreader.png" alt="Logo do GoReader" className="logo-goreader"></img>
+                    <h2 className="header-title">Carregando Detalhes do Estudante...</h2>
+                    <img src="/oci.png" alt="Logo da OCI" className="logo-oci"></img>
+                </header>
+                <main className="SDmain-content" style={{ textAlign: 'center', marginTop: '50px' }}>
+                    <p>{statusMessage || 'Aguarde...'}</p>
+                </main>
+            </div>
+        );
+    }
+
+    if (statusMessage.includes('Erro') && !participante) {
+        return (
+            <div className="read-container">
+                <header className="read-header">
+                    <img src="/goreader.png" alt="Logo do GoReader" className="logo-goreader"></img>
+                    <h2 className="header-title">Erro ao Carregar Estudante</h2>
+                    <img src="/oci.png" alt="Logo da OCI" className="logo-oci"></img>
+                </header>
+                <main className="SDmain-content" style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>
+                    <p>{statusMessage}</p>
+                    <button className="back-button" onClick={handleBack} style={{ marginTop: '20px' }}>Voltar para a Lista</button>
+                </main>
+            </div>
+        );
+    }
+
+    if (!participante) {
+        return (
+            <div className="read-container">
+                <header className="read-header">
+                    <img src="/goreader.png" alt="Logo do GoReader" className="logo-goreader"></img>
+                    <h2 className="header-title">Estudante Não Encontrado</h2>
+                    <img src="/oci.png" alt="Logo da OCI" className="logo-oci"></img>
+                </header>
+                <main className="SDmain-content" style={{ textAlign: 'center', marginTop: '50px' }}>
+                    <p>O estudante com ID "{id}" não foi encontrado.</p>
+                    <button className="back-button" onClick={handleBack} style={{ marginTop: '20px' }}>Voltar para a Lista</button>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="read-container">
             <header className="read-header">
-                <img src="/goreader.png" alt="Logo do GoReader" class="logo-goreader"></img>
+                <img src="/goreader.png" alt="Logo do GoReader" className="logo-goreader"></img>
                 <h2 className="header-title">Leitor de gabaritos da OCI</h2>
-                <img src="/oci.png" alt="Logo da OCI" class="logo-oci"></img>
+                <img src="/oci.png" alt="Logo da OCI" className="logo-oci"></img>
             </header>
             <main className="SDmain-content">
                 <div className="SDform-section">
-                    <h1>Estudante {'{'}{formData.aluno}{'}'} 🎲</h1>
+                    <h1>Estudante {participante.nome || participante.id} 🎲</h1>
                     <form>
-                        <label>Nome do aluno: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.aluno} readOnly/></label>
-                        <label>Nome da escola: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.escola} readOnly/></label>
-                        <label>Modalidade: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.modalidade} readOnly/></label>
-                        <label>Fase: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.fase} readOnly/></label>
-                        <label>Data: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.data} readOnly/></label>
-                        <label>Inscrição: <input type="text" style={{width:'250px', background: "transparent"}} value={formData.inscricao} readOnly/></label>
-                        <label>Acertos: <input type="text" style={{width:'80px',marginRight:'170px', background: "transparent"}} value={formData.acertos} readOnly/></label>
-                        <label>Nota: <input type="text" style={{width:'80px',marginRight:'170px', background: "transparent"}} value={formData.nota} readOnly/></label>
-                        <label>Erro: <input type="text" style={{width:'80px',marginRight:'170px', background: "transparent"}} value={formData.erro} readOnly/></label>
+                        <label>ID do Participante: <input type="text" style={{ width: '250px', background: "transparent" }} value={participante.id || 'N/A'} readOnly /></label>
+                        <label>Nome do Aluno: <input type="text" style={{ width: '250px', background: "transparent" }} value={participante.nome || 'N/A'} readOnly /></label>
+                        <label>Email: <input type="text" style={{ width: '250px', background: "transparent" }} value={participante.email || 'N/A'} readOnly /></label>
+                        <label>Data de Criação: <input type="text" style={{ width: '250px', background: "transparent" }} value={participante.data_criacao ? new Date(participante.data_criacao).toLocaleDateString() : 'N/A'} readOnly /></label>
                     </form>
                 </div>
                 <div style={{ width: "2px", background: "black" }} />
-                <div className="gabarito-section" style={{width:'100px'}}>
-                    <h3 style={{textAlign: "left"}}>Gabarito:</h3>
-                    <table style={{width:'250px'}}>
-                        <tbody>
-                            {Array.from({ length: 10 }, (_, i) => (
-                                <tr key={i}>
-                                    <td style={{width: '25%'}}>{String(i + 1).padStart(2, '0')}</td>
-                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i]} readOnly/></td>
-                                    <td style={{width: '25%'}}>{String(i + 11).padStart(2, '0')}</td>
-                                    <td style={{width: '25%'}}><input style={{width:'30px'}} type="text" value={formData.gabarito[i+10]} readOnly/></td>
+                <div className="SDgabarito-section" style={{ width: '100%' }}> 
+                    <h3 style={{ textAlign: "left" }}>Leituras Associadas:</h3>
+                    {leiturasDoParticipante.length === 0 ? (
+                        <p>Nenhuma leitura encontrada para este estudante.</p>
+                    ) : (
+                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                            <thead>
+                                <tr style={{ background: '#f2f2f2' }}>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>ID Leitura</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Prova</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Respostas</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Nota</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Acertos</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Status</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Erro</th>
+                                    <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Ações</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {leiturasDoParticipante.map(leitura => (
+                                    <tr key={leitura.id}>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.id}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.prova_details?.nome || leitura.prova?.id || 'N/A'}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.leitura_respostas}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.nota !== null ? leitura.nota.toFixed(2) : 'N/A'}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.acertos || 'N/A'}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{leitura.status}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>{getErrorDescription(leitura.erro)}</td>
+                                        <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                                            <button onClick={() => navigate(`/leitura/${leitura.id}`)} style={{ padding: '5px 10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
+                                                Ver
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
-                <div className="legenda" style={{width:'120px', textAlign:'left'}}>
+                <div className="legenda" style={{ width: '120px', textAlign: 'left', marginTop: '20px' }}>
                     <p>Erros:</p>
                     <p>0: não houve erro</p>
                     <p>1: erro na leitura do código Aztec</p>
@@ -67,7 +150,7 @@ export default function StudentDetailView() {
                     <p>3: erro fatal durante a leitura</p>
                     <p>-1: não foi possível identificar</p>
                     <p>0: questão em branco</p>
-                    <p>X: questão com mais de uma opção marcada</p>
+                    <p>?: questão com mais de uma opção marcada</p>
                     <button className="back-button" onClick={handleBack}>Voltar</button>
                 </div>
             </main>

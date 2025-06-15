@@ -16,9 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+from rest_framework.routers import DefaultRouter
+
+from registro.views import ProvaViewSet, ParticipanteViewSet
+from upload.views import LeituraGabaritoViewSet, UploadLeituraAPIView, ConfirmarLeituraAPIView
+
+router = DefaultRouter()
+router.register(r'provas', ProvaViewSet)
+router.register(r'participantes', ParticipanteViewSet)
+router.register(r'leituras_gabarito', LeituraGabaritoViewSet, basename='leitura_gabarito')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/registro/', include('registro.urls')),
-    path('api/upload/',   include('upload.urls')),
+    path('api/', include(router.urls)),
+    path('api/upload/leitura/', UploadLeituraAPIView.as_view(), name='upload-leitura'),
+    path('api/upload/leitura/confirmar/', ConfirmarLeituraAPIView.as_view(), name='confirmar-leitura'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,16 +1,14 @@
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from rest_framework import status, mixins, viewsets
+from rest_framework import status
 from django.core.files.storage import default_storage
+from django.db import IntegrityError, transaction 
 
 from .serializers import (
     UploadLeituraSerializer,
     ConfirmarLeituraSerializer,
-    LeituraGabaritoSerializer,
-    LeituraReportSerializer,
-    LeituraEditSerializer,
+    LeituraGabaritoSerializer
 )
 from .services.leitor import ler_por_caminho
 from .services.nota import calcular_nota
@@ -18,128 +16,75 @@ from .models import LeituraGabarito
 from registro.models import Prova, Participante
 
 class UploadLeituraAPIView(APIView):
-    """
-    Recebe imagem, salva temp, faz leitura pela lib em C
-    e cruza com o DB para retornar nome/escola imediatamente.
-    """
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         ser = UploadLeituraSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
 
-        
-        img   = ser.validated_data['arquivo']
-        path  = default_storage.save(f"temp/{img.name}", img)
-        abs_p = default_storage.path(path)
-        r     = ler_por_caminho(abs_p)  # retorna dict com id_prova, id_participante, leitura, erro
-
-        
-        externo_prova_id = r["id_prova"]
+        img = ser.validated_data['arquivo']
         try:
-            prova = Prova.objects.get(externo_id=externo_prova_id)
-        except Prova.DoesNotExist:
-            raise ValidationError({
-                "prova_id": f"Prova externa {externo_prova_id} não cadastrada."
-            })
+            path = default_storage.save(f"temp/{img.name}", img)
+            abs_path = default_storage.path(path)
+        except Exception as e:
+            return Response({"detail": f"Erro interno ao salvar a imagem: {e}"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
-        externo_part_id = r["id_participante"]
-        participante = Participante.objects.filter(externo_id=externo_part_id).first()
-        nome_aluno = participante.nome  if participante else ""
-        escola_aluno = participante.escola if participante else ""
+        resultado_leitura_c = ler_por_caminho(abs_path)
 
-       
-        return Response({
-            "prova_id":          externo_prova_id,
-            "participante_id":   externo_part_id,
-            "nome_aluno":        nome_aluno,
-            "escola_aluno":      escola_aluno,
-            "leitura_respostas": r["leitura"],
-            "erro":              r["erro"],
-            "temp_path":         path,
-            # campos que o usuário vai preencher na UI:
-            "modalidade":        "",
-            "fase":              "",
-            "data":              None,
-        })
+        if resultado_leitura_c['erro'] == 3:
+            return Response({"detail": f"Erro fatal na leitura do gabarito: {resultado_leitura_c['leitura']}"},
+                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return Response({**resultado_leitura_c, 'temp_path': path}, status=status.HTTP_200_OK)
 
 class ConfirmarLeituraAPIView(APIView):
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         ser = ConfirmarLeituraSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         d = ser.validated_data
 
-        # Validação para prova deve existir
-        try:
-            prova = Prova.objects.get(externo_id=d['prova_id'])
-        except Prova.DoesNotExist:
-            raise ValidationError({
-                "prova_id": f"Prova externa {d['prova_id']} não cadastrada."})
-        # participante on the fly
-        part, _ = Participante.objects.get_or_create(
-            externo_id=d['participante_id'],
-            defaults={'nome':f"Aluno {d['participante_id']}", 'escola':''}
-        )
+        with transaction.atomic(): 
+            try:
+                prova = Prova.objects.get(externo_id=d['prova_id'])
+            except Prova.DoesNotExist:
+                return Response({"detail": f"Prova com externo_id '{d['prova_id']}' não encontrada."},
+                                status=status.HTTP_404_NOT_FOUND)
+            try:
+                part = Participante.objects.get(externo_id=d['participante_id'])
+            except Participante.DoesNotExist:
+                return Response({"detail": f"Participante com externo_id '{d['participante_id']}' não encontrado."},
+                                status=status.HTTP_404_NOT_FOUND)
 
-        nota, acertos = calcular_nota(d['leitura_respostas'], prova)
-        lg = LeituraGabarito.objects.create(
-            prova=prova,
-            participante=part,
-            externo_prova_id=d['prova_id'],
-            externo_participante_id=d['participante_id'],
-            leitura_respostas=d['leitura_respostas'],
-            erro=0,
-            nota=nota,
-            acertos=acertos,
-            status='confirmado',
-            caminho_imagem=d.get('temp_path',''),
-            numero_inscricao=d['participante_id']
-        )
+            nota, acertos = calcular_nota(d['leitura_respostas'], prova)
+
+            try:
+                lg = LeituraGabarito.objects.create(
+                    prova=prova,
+                    participante=part,
+                    leitura_respostas=d['leitura_respostas'],
+                    erro=d['erro'], 
+                    nota=nota,
+                    acertos=acertos,
+                    status='confirmado',
+                    caminho_imagem=d.get('temp_path','')
+                )
+            except IntegrityError as e:
+                return Response({"detail": f"Erro de integridade ao salvar leitura: {e}"},
+                                status=status.HTTP_409_CONFLICT)
+            except Exception as e:
+                return Response({"detail": f"Erro inesperado ao salvar leitura de gabarito: {e}"},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response({
             'id': lg.id,
             'nota': lg.nota,
-            'acertos': lg.acertos
-        }, status=201)
+            'acertos': lg.acertos,
+            'data_hora': lg.data_hora,
+            'erro': lg.erro, 
+            'erro_display': lg.get_erro_display(),
+            'caminho_imagem': lg.caminho_imagem
+        }, status=status.HTTP_201_CREATED)
 
-class LeituraGabaritoViewSet(viewsets.ModelViewSet):
-    queryset = LeituraGabarito.objects.all()
+class LeituraGabaritoViewSet(ModelViewSet):
     serializer_class = LeituraGabaritoSerializer
-
-@api_view(['GET'])
-def report_leituras(request):
-    qs = LeituraGabarito.objects.order_by('id')
-    ser = LeituraReportSerializer(qs, many=True)
-    return Response(ser.data)
-
-class EditLeituraAPIView(APIView):
-    """
-    PUT /api/upload/leituras/{id}/edit/
-    Permite editar apenas os campos manuais.
-    """
-    def put(self, request, pk):
-        lg = LeituraGabarito.objects.filter(pk=pk).first()
-        if not lg:
-            return Response({"detail":"Não encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
-        # se não há participante, tenta criar para manter integridade
-        if not lg.participante and lg.numero_inscricao:
-            part, _ = Participante.objects.get_or_create(
-                externo_id=lg.numero_inscricao,
-                defaults={'nome':'','escola':''}
-            )
-            lg.participante = part
-
-        ser = LeituraEditSerializer(lg, data=request.data, partial=True)
-        ser.is_valid(raise_exception=True)
-        ser.save()
-
-        # também atualiza participante com nome/escola se presente
-        nome = ser.validated_data.get('nome_aluno')
-        esc  = ser.validated_data.get('escola_aluno')
-        if nome or esc:
-            part = lg.participante
-            if part:
-                if nome: part.nome = nome
-                if esc:  part.escola = esc
-                part.save()
-
-        return Response(LeituraReportSerializer(lg).data)
+    def get_queryset(self):
+        return LeituraGabarito.objects.select_related('prova', 'participante').all()

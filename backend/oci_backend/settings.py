@@ -98,5 +98,4 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-os.getenv('LIBLEITOR_PATH',
-os.path.join(BASE_DIR, 'backend/libs', 'libleitor.so'))
+LIBLEITOR_PATH = os.getenv('LIBLEITOR_PATH', os.path.join(BASE_DIR, 'backend/libs', 'libleitor.so'))

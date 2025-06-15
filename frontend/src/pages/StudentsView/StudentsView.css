@@ -1,1 +1,114 @@
+body {
+    margin: 0;
+}
 
+.students-container {
+    background: #0CC0DF;
+    background: linear-gradient(90deg, rgba(12, 192, 223, 1) 0%, rgba(255, 222, 89, 1) 100%);
+    height: 110vh; 
+    min-height: 100vh; 
+    padding-bottom: 20px; 
+}
+
+.students-header {
+    background-color: #48908e;
+    padding: 10px 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    justify-content: space-between;
+    display: flex;
+    align-items: center; 
+}
+
+.header-title {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-right: 125px; 
+    margin-top: 15px;
+    margin-bottom: 0%;
+    flex-grow: 1; 
+}
+
+.logo-goreader,
+.logo-oci {
+    width: auto;
+    height: 50px;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+.students-main-content {
+    max-width: 900px;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column; 
+    gap: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.students-list {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px; 
+    margin-top: 20px;
+}
+
+.student-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px; 
+}
+
+.student-card h3 {
+    margin-top: 0;
+    color: #48908e;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.student-card p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.view-details-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #fbbc4b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-decoration: underline;
+    transition: background-color 0.3s ease;
+    align-self: flex-start; 
+}
+
+.view-details-button:hover {
+    background-color: #bc964f;
+}
+
+.hidden {
+    display: none;
+}
+
+.status-message {
+    font-size: 1.1em;
+    margin-top: 15px;
+    text-align: center;
+}

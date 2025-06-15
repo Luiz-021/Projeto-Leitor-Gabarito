@@ -1,36 +1,59 @@
 from rest_framework import serializers
 from .models import LeituraGabarito
+from registro.serializers import ProvaSerializer, ParticipanteSerializer
 
 class UploadLeituraSerializer(serializers.Serializer):
     arquivo = serializers.ImageField()
 
 class ConfirmarLeituraSerializer(serializers.Serializer):
-    prova_id          = serializers.IntegerField()
-    participante_id   = serializers.IntegerField()
+    prova_id        = serializers.IntegerField()
+    participante_id = serializers.IntegerField()
     leitura_respostas = serializers.CharField()
-    temp_path         = serializers.CharField(required=False)
+    erro            = serializers.IntegerField() 
+    temp_path       = serializers.CharField(required=False, allow_blank=True) 
 
 class LeituraGabaritoSerializer(serializers.ModelSerializer):
+    
+    prova_details = ProvaSerializer(source='prova', read_only=True)
+    participante_details = ParticipanteSerializer(source='participante', read_only=True)
+
+ 
+    erro_display = serializers.CharField(source='get_erro_display', read_only=True)
+
     class Meta:
         model = LeituraGabarito
-        fields = '__all__'
+       
+        fields = [
+            'id', 'prova', 'participante', 'leitura_respostas', 'erro', 'nota',
+            'acertos', 'status', 'caminho_imagem', 'numero_inscricao', 'nome_aluno',
+            'escola_aluno', 'modalidade', 'fase', 'data', 'data_hora_registro',
+            'prova_details', 'participante_details', 'erro_display' # <-- Adicionados
+        ]
+       
         read_only_fields = (
-            'id','externo_prova_id','externo_participante_id',
-            'prova','participante',
-            'erro','nota','acertos','status','caminho_imagem',
+            'id', 'prova', 'participante', 'erro', 'nota', 'acertos', 'status',
+            'caminho_imagem', 'data_hora_registro',
+            'prova_details', 'participante_details', 'erro_display'
         )
 
 class LeituraReportSerializer(serializers.ModelSerializer):
+    
+    prova_nome = serializers.CharField(source='prova.nome', read_only=True)
+    participante_nome = serializers.CharField(source='participante.nome', read_only=True)
+    erro_display = serializers.CharField(source='get_erro_display', read_only=True)
+
     class Meta:
         model = LeituraGabarito
+        
         fields = [
-            'caminho_imagem','erro',
-            'externo_prova_id','externo_participante_id',
-            'leitura_respostas','acertos','nota',
-            'numero_inscricao','nome_aluno','escola_aluno',
-            'modalidade','fase','data',
+            'id', 'caminho_imagem', 'erro', 'erro_display', 
+            'leitura_respostas', 'acertos', 'nota',
+            'numero_inscricao', 'nome_aluno', 'escola_aluno',
+            'modalidade', 'fase', 'data',
+            'prova_nome', 'participante_nome',
+            'status', 'data_hora_registro'
         ]
-        read_only_fields = fields
+        read_only_fields = fields 
 
 class LeituraEditSerializer(serializers.ModelSerializer):
     """
@@ -40,7 +63,7 @@ class LeituraEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeituraGabarito
         fields = [
-            'leitura_respostas',
+            
             'numero_inscricao',
             'nome_aluno',
             'escola_aluno',
@@ -48,4 +71,3 @@ class LeituraEditSerializer(serializers.ModelSerializer):
             'fase',
             'data',
         ]
-        
