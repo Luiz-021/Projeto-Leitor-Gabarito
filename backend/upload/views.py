@@ -110,7 +110,10 @@ class LeituraGabaritoViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def report_leituras(request):
-    qs = LeituraGabarito.objects.order_by('id')
+    qs = LeituraGabarito.objects.all().order_by('id')
+    ext_part = request.query_params.get('externo_participante_id')
+    if ext_part is not None:
+        qs = qs.filter(externo_participante_id=ext_part)
     ser = LeituraReportSerializer(qs, many=True)
     return Response(ser.data)
 
