@@ -56,7 +56,6 @@ class UploadLeituraAPIView(APIView):
             "leitura_respostas": r["leitura"],
             "erro":              r["erro"],
             "temp_path":         path,
-            # campos que o usuário vai preencher na UI:
             "modalidade":        "",
             "fase":              "",
             "data":              None,
@@ -74,7 +73,7 @@ class ConfirmarLeituraAPIView(APIView):
         except Prova.DoesNotExist:
             raise ValidationError({
                 "prova_id": f"Prova externa {d['prova_id']} não cadastrada."})
-        # participante on the fly
+        
         part, _ = Participante.objects.get_or_create(
             externo_id=d['participante_id'],
             defaults={'nome':f"Aluno {d['participante_id']}", 'escola':''}
@@ -125,7 +124,6 @@ class EditLeituraAPIView(APIView):
         if not lg:
             return Response({"detail":"Não encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
-        # se não há participante, tenta criar para manter integridade
         if not lg.participante and lg.numero_inscricao:
             part, _ = Participante.objects.get_or_create(
                 externo_id=lg.numero_inscricao,
